@@ -13,9 +13,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
 } from 'recharts';
 
 // Sample data for charts
@@ -28,15 +25,6 @@ const salesData = [
   { name: 'Jun', sales: 2390 },
 ];
 
-const inventoryData = [
-  { name: 'Candle', value: 20 },
-  { name: 'Bible', value: 25 },
-  { name: 'Rosary', value: 30 },
-  { name: 'Prayer Book', value: 15 },
-  { name: 'T-Shirt', value: 40 },
-];
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 // Sample transaction data
 const transactions = [
@@ -240,132 +228,91 @@ const Reports: React.FC = () => {
           )}
 
           {reportType === 'inventory' && (
-            <div className="grid grid-cols-1 gap-6">
-              <div className="box p-4">
-                <h2 className="text-xl font-semibold mb-4">Inventory Status</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h3 className="text-gray-500">Total Products</h3>
-                    <p className="text-2xl font-bold">5</p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="text-gray-500">Items in Stock</h3>
-                    <p className="text-2xl font-bold">130</p>
-                  </div>
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <h3 className="text-gray-500">Low Stock Items</h3>
-                    <p className="text-2xl font-bold">2</p>
-                  </div>
-                </div>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={inventoryData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        nameKey="name"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {inventoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+  <div className="grid grid-cols-1 gap-6">
+    <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
+      <div className="box p-6">
+        <h3 className="text-gray-500 text-lg mb-2">Total Products</h3>
+        <p className="text-3xl font-bold">5</p>
+      </div>
+      <div className="box p-6">
+        <h3 className="text-gray-500 text-lg mb-2">Items in Stock</h3>
+        <p className="text-3xl font-bold">130</p>
+      </div>
+      <div className="box p-6">
+        <h3 className="text-gray-500 text-lg mb-2">Low Stock Items</h3>
+        <p className="text-3xl font-bold">2</p>
+      </div>
+    </div>
 
-              <div className="box p-4">
-                <h2 className="text-xl font-semibold mb-4">Inventory Details</h2>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap">T-Shirt</td>
-                        <td className="px-6 py-4 whitespace-nowrap">40</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₱18.00</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            In Stock
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900">Restock</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap">Bible</td>
-                        <td className="px-6 py-4 whitespace-nowrap">25</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₱15.00</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            In Stock
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900">Restock</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap">Rosary</td>
-                        <td className="px-6 py-4 whitespace-nowrap">30</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₱12.00</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            In Stock
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900">Restock</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap">Candle</td>
-                        <td className="px-6 py-4 whitespace-nowrap">20</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₱10.00</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            In Stock
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900">Restock</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap">Prayer Book</td>
-                        <td className="px-6 py-4 whitespace-nowrap">5</td>
-                        <td className="px-6 py-4 whitespace-nowrap">₱20.00</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Low Stock
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900">Restock</button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
+    <div className="box p-4">
+      <h2 className="text-xl font-semibold mb-4">Inventory Details</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">T-Shirt</td>
+              <td className="px-6 py-4 whitespace-nowrap">40</td>
+              <td className="px-6 py-4 whitespace-nowrap">₱18.00</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  In Stock
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">Bible</td>
+              <td className="px-6 py-4 whitespace-nowrap">25</td>
+              <td className="px-6 py-4 whitespace-nowrap">₱15.00</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  In Stock
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">Rosary</td>
+              <td className="px-6 py-4 whitespace-nowrap">30</td>
+              <td className="px-6 py-4 whitespace-nowrap">₱12.00</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  In Stock
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">Candle</td>
+              <td className="px-6 py-4 whitespace-nowrap">20</td>
+              <td className="px-6 py-4 whitespace-nowrap">₱10.00</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  In Stock
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 whitespace-nowrap">Prayer Book</td>
+              <td className="px-6 py-4 whitespace-nowrap">5</td>
+              <td className="px-6 py-4 whitespace-nowrap">₱20.00</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                  Low Stock
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
 
           {reportType === 'transactions' && (
             <div className="box p-4">
@@ -379,7 +326,6 @@ const Reports: React.FC = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -393,11 +339,7 @@ const Reports: React.FC = () => {
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                             {transaction.status}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button className="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                          <button className="text-green-600 hover:text-green-900">Print</button>
-                        </td>
+                        </td>                     
                       </tr>
                     ))}
                   </tbody>

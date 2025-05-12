@@ -10,7 +10,11 @@ function Header() {
   };
 
   return (
-    <header className="app-header sticky" id="header">
+    <header
+      className="app-header sticky"
+      id="header"
+      style={{ backgroundColor: '#F0F0F0' }} // Inline CSS applied here
+    >
       <div className="main-header-container container-fluid flex justify-between items-center px-4 py-2">
         <div className="header-content-left flex items-center space-x-4">
           <div className="horizontal-logo">
@@ -29,7 +33,6 @@ function Header() {
               data-bs-toggle="sidebar"
               href="javascript:void(0);"
             >
-              <span> </span>
             </a>
           </div>
         </div>
