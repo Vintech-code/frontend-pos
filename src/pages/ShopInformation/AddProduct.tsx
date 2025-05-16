@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "../../layouts/header";
 import Sidemenu from "../../layouts/sidemenu";
 import Breadcrumb from "../../components/breadcrumbs";
@@ -75,9 +77,28 @@ const AddProduct: React.FC = () => {
         throw new Error(errorData.message || "Failed to add product");
       }
 
+      // Show success toast
+      toast.success("Product added successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
       navigate("/shop");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
+      // Show error toast
+      toast.error("Failed to add product", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsSubmitting(false);
     }

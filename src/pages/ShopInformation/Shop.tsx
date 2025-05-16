@@ -5,6 +5,7 @@ import Sidemenu from "../../layouts/sidemenu";
 import Breadcrumb from "../../components/breadcrumbs";
 import { HiPencilSquare } from "react-icons/hi2";
 
+
 interface Product {
   id: number;
   name: string;
@@ -65,6 +66,49 @@ const Shop: React.FC = () => {
   fetchProducts();
 }, []);
 
+const handleCheckout = async () => {
+  if (cart.length === 0) return;
+  try {
+    const token = localStorage.getItem('auth_token');
+    const headers: HeadersInit = { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('http://localhost:8000/api/products/checkout', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        items: cart.map(item => ({
+          id: item.id,
+          quantity: item.quantity,
+          // Include additional selection details if needed
+          selectedSize: item.selectedSize,
+          selectedColor: item.selectedColor,
+          selectedType: item.selectedType
+        })),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Checkout failed");
+    }
+
+    // Clear cart and show success message
+    setCart([]);
+    alert("Checkout successful!");
+    
+    // Return the response data which should include the new history records
+    return await response.json();
+  } catch (err: any) {
+    alert(err.message || "Checkout failed");
+    throw err; // Re-throw the error so it can be handled by the caller if needed
+  }
+};
 
   const handleSelectionChange = (
     productId: number,
@@ -148,17 +192,41 @@ const Shop: React.FC = () => {
     setUpdatedStock(product.stock.toString());
   };
 
-  const handleUpdateProduct = () => {
-    if (!editingProduct) return;
-    const price = parseFloat(updatedPrice);
-    const stock = parseInt(updatedStock);
-    if (isNaN(price) || isNaN(stock)) return;
+  const handleUpdateProduct = async () => {
+  if (!editingProduct) return;
+  
+  const price = parseFloat(updatedPrice);
+  const stock = parseInt(updatedStock);
+  if (isNaN(price) || isNaN(stock)) return;
+
+  try {
+    const token = localStorage.getItem('auth_token');
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`http://localhost:8000/api/products/${editingProduct.id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ price, stock }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update product');
+    }
+
+    // Only update local state after successful API update
     const updatedProducts = products.map((p) =>
       p.id === editingProduct.id ? { ...p, price, stock } : p
     );
     setProducts(updatedProducts);
     setEditingProduct(null);
-  };
+  } catch (error) {
+    console.error('Error updating product:', error);
+    // You might want to show an error message to the user here
+  }
+};
 
   return (
     <>
@@ -195,10 +263,10 @@ const Shop: React.FC = () => {
                         <img
                           src={
                             product.image
-                              ? product.image.startsWith("http")
+                              ? product.image.startsWith('http') || product.image.startsWith('/storage')
                                 ? product.image
                                 : `http://localhost:8000/storage/${product.image}`
-                              : "/placeholder.jpg"
+                              : '/placeholder.jpg'
                           }
                           alt={product.name}
                           className="w-full h-40 object-cover rounded-md mb-4"
@@ -362,12 +430,14 @@ const Shop: React.FC = () => {
                 </div>
                 <div className="mt-4 border-t pt-4">
                   <p className="font-semibold text-lg">Total: ₱{total.toFixed(2)}</p>
-                  <button
-                    className="w-full mt-2 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
-                    disabled={cart.length === 0}
-                  >
-                    Checkout
-                  </button>
+                 <button
+  className="w-full mt-2 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+  disabled={cart.length === 0}
+  onClick={handleCheckout}
+>
+  Checkout
+</button>
+
                 </div>
               </div>
             </div>
@@ -375,7 +445,7 @@ const Shop: React.FC = () => {
 
           {/* Minimal Edit Modal */}
           {editingProduct && (
-            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-md shadow p-5 w-72 relative">
                 <button
                   onClick={() => setEditingProduct(null)}

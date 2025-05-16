@@ -43,7 +43,14 @@ function Sidemenu() {
                                     </span>
                                 </Link>
                             </li>
-
+                             <li className="slide">
+                                <Link to="/producthistory" className="side-menu__item">
+                                    <i className="w-6 h-4 side-menu__icon bi bi-clock-history"></i>
+                                    <span className="side-menu__label">
+                                        History
+                                    </span>
+                                </Link>
+                            </li>
                             <li className="slide">
                                 <Link to="/reports" className="side-menu__item">
                                     <i className="w-6 h-4 side-menu__icon bi bi-newspaper"></i>
