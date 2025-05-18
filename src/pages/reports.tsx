@@ -60,7 +60,6 @@ const Reports: React.FC = () => {
             title="Reports - Social Action Center"
             links={[
               { text: "Dashboard", link: "/" },
-              { text: "POS", link: "/shop" },
               { text: "POS", link: "/shop" }
             ]}
             active="Reports"
@@ -228,91 +227,91 @@ const Reports: React.FC = () => {
           )}
 
           {reportType === 'inventory' && (
-  <div className="grid grid-cols-1 gap-6">
-    <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
-      <div className="box p-6">
-        <h3 className="text-gray-500 text-lg mb-2">Total Products</h3>
-        <p className="text-3xl font-bold">5</p>
-      </div>
-      <div className="box p-6">
-        <h3 className="text-gray-500 text-lg mb-2">Items in Stock</h3>
-        <p className="text-3xl font-bold">130</p>
-      </div>
-      <div className="box p-6">
-        <h3 className="text-gray-500 text-lg mb-2">Low Stock Items</h3>
-        <p className="text-3xl font-bold">2</p>
-      </div>
-    </div>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
+                <div className="box p-6">
+                  <h3 className="text-gray-500 text-lg mb-2">Total Products</h3>
+                  <p className="text-3xl font-bold">5</p>
+                </div>
+                <div className="box p-6">
+                  <h3 className="text-gray-500 text-lg mb-2">Items in Stock</h3>
+                  <p className="text-3xl font-bold">130</p>
+                </div>
+                <div className="box p-6">
+                  <h3 className="text-gray-500 text-lg mb-2">Low Stock Items</h3>
+                  <p className="text-3xl font-bold">2</p>
+                </div>
+              </div>
 
-    <div className="box p-4">
-      <h2 className="text-xl font-semibold mb-4">Inventory Details</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap">T-Shirt</td>
-              <td className="px-6 py-4 whitespace-nowrap">40</td>
-              <td className="px-6 py-4 whitespace-nowrap">₱18.00</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap">Bible</td>
-              <td className="px-6 py-4 whitespace-nowrap">25</td>
-              <td className="px-6 py-4 whitespace-nowrap">₱15.00</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap">Rosary</td>
-              <td className="px-6 py-4 whitespace-nowrap">30</td>
-              <td className="px-6 py-4 whitespace-nowrap">₱12.00</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap">Candle</td>
-              <td className="px-6 py-4 whitespace-nowrap">20</td>
-              <td className="px-6 py-4 whitespace-nowrap">₱10.00</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  In Stock
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td className="px-6 py-4 whitespace-nowrap">Prayer Book</td>
-              <td className="px-6 py-4 whitespace-nowrap">5</td>
-              <td className="px-6 py-4 whitespace-nowrap">₱20.00</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                  Low Stock
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="box p-4">
+                <h2 className="text-xl font-semibold mb-4">Inventory Details</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">T-Shirt</td>
+                        <td className="px-6 py-4 whitespace-nowrap">40</td>
+                        <td className="px-6 py-4 whitespace-nowrap">₱18.00</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            In Stock
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">Bible</td>
+                        <td className="px-6 py-4 whitespace-nowrap">25</td>
+                        <td className="px-6 py-4 whitespace-nowrap">₱15.00</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            In Stock
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">Rosary</td>
+                        <td className="px-6 py-4 whitespace-nowrap">30</td>
+                        <td className="px-6 py-4 whitespace-nowrap">₱12.00</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            In Stock
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">Candle</td>
+                        <td className="px-6 py-4 whitespace-nowrap">20</td>
+                        <td className="px-6 py-4 whitespace-nowrap">₱10.00</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            In Stock
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">Prayer Book</td>
+                        <td className="px-6 py-4 whitespace-nowrap">5</td>
+                        <td className="px-6 py-4 whitespace-nowrap">₱20.00</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            Low Stock
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
 
           {reportType === 'transactions' && (
             <div className="box p-4">

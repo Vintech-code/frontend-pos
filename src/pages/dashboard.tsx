@@ -1,7 +1,7 @@
 import Breadcrumb from "../components/breadcrumbs";
 import Header from "../layouts/header";
 import Sidemenu from "../layouts/sidemenu";
-import logo from '../assets/images/faces/14.jpg';
+
 
 // Example data for the metrics, you can replace these with dynamic data
 const metrics = {
@@ -20,20 +20,8 @@ function Dashboard() {
         <div className="container-fluid">
           <Breadcrumb title="Dashboard" links={[{ text: "Home", link: "/" }]} active="Dashboard" />
 
-          <div className="grid grid-cols-12 gap-x-6">
-            {/* Welcome Section */}
-            <div className="xxl:col-span-3 col-span-12">
-              <div className="box overflow-hidden main-content-card">
-                <div className="box-body text-center p-5">
-                  <center>
-                    <img src={logo} alt="User Logo" className="transparent-logo avatar-rounded" />
-                    <p className="mt-1 mb-0">
-                      <span><i>Welcome back, Customer!</i></span>
-                    </p>
-                  </center>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-3 gap-x-9">
+           
 
             {/* Dashboard Metrics */}
             <div className="xxl:col-span-9 col-span-12">

@@ -5,7 +5,6 @@ import Sidemenu from "../../layouts/sidemenu";
 import Breadcrumb from "../../components/breadcrumbs";
 import { HiPencilSquare } from "react-icons/hi2";
 
-
 interface Product {
   id: number;
   name: string;
@@ -35,86 +34,105 @@ interface SelectionState {
 const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [updatedPrice, setUpdatedPrice] = useState("");
-  const [updatedStock, setUpdatedStock] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [updatedPrice, setUpdatedPrice] = useState<string>("");
+  const [quantityToAdd, setQuantityToAdd] = useState<string>("");
   const [selections, setSelections] = useState<SelectionState>({});
+  const [activeTab, setActiveTab] = useState<"price" | "stock">("price");
 
-  // Fetch products from backend API on mount
- useEffect(() => {
-  const fetchProducts = async () => {
+  const displayPrice = (price: number | string): string => {
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+    return `₱${numericPrice.toFixed(2)}`;
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const headers: HeadersInit = {
+          'Accept': 'application/json',
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch("http://localhost:8000/api/products", {
+          headers,
+        });
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+        const productsData = Array.isArray(data) ? data : data.data || [];
+        
+        const formattedProducts = productsData.map((product: any) => ({
+          ...product,
+          price: Number(product.price),
+          stock: Number(product.stock)
+        }));
+        
+        setProducts(formattedProducts);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleCheckout = async (): Promise<void> => {
+    if (cart.length === 0) return;
     try {
       const token = localStorage.getItem('auth_token');
-      // Build headers without undefined values
-      const headers: HeadersInit = {
-        'Accept': 'application/json',
+      const headers: HeadersInit = { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       };
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch("http://localhost:8000/api/products", {
+      const response = await fetch('http://localhost:8000/api/products/checkout', {
+        method: 'POST',
         headers,
+        body: JSON.stringify({
+          items: cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            selectedSize: item.selectedSize,
+            selectedColor: item.selectedColor,
+            selectedType: item.selectedType
+          })),
+        }),
       });
-      if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
-      setProducts(Array.isArray(data) ? data : data.data || []);
-    } catch (error) {
-      console.error(error);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Checkout failed");
+      }
+
+      setProducts(prevProducts => 
+        prevProducts.map(product => {
+          const cartItem = cart.find(item => item.id === product.id);
+          if (cartItem) {
+            return {
+              ...product,
+              stock: product.stock - cartItem.quantity
+            };
+          }
+          return product;
+        })
+      );
+      
+      setCart([]);
+      alert("Checkout successful!");
+    } catch (err: any) {
+      alert(err.message || "Checkout failed");
     }
   };
-  fetchProducts();
-}, []);
-
-const handleCheckout = async () => {
-  if (cart.length === 0) return;
-  try {
-    const token = localStorage.getItem('auth_token');
-    const headers: HeadersInit = { 
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch('http://localhost:8000/api/products/checkout', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        items: cart.map(item => ({
-          id: item.id,
-          quantity: item.quantity,
-          // Include additional selection details if needed
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor,
-          selectedType: item.selectedType
-        })),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Checkout failed");
-    }
-
-    // Clear cart and show success message
-    setCart([]);
-    alert("Checkout successful!");
-    
-    // Return the response data which should include the new history records
-    return await response.json();
-  } catch (err: any) {
-    alert(err.message || "Checkout failed");
-    throw err; // Re-throw the error so it can be handled by the caller if needed
-  }
-};
 
   const handleSelectionChange = (
     productId: number,
     field: "selectedSize" | "selectedColor" | "selectedType",
     value: string
-  ) => {
+  ): void => {
     setSelections((prev) => ({
       ...prev,
       [productId]: {
@@ -129,7 +147,7 @@ const handleCheckout = async () => {
     selectedSize?: string,
     selectedColor?: string,
     selectedType?: string
-  ) => {
+  ): void => {
     setCart((prev) => {
       const existing = prev.find(
         (item) =>
@@ -165,11 +183,11 @@ const handleCheckout = async () => {
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: number): void => {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: number, delta: number) => {
+  const updateQuantity = (id: number, delta: number): void => {
     setCart((prev) =>
       prev
         .map((item) =>
@@ -186,45 +204,66 @@ const handleCheckout = async () => {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const openEditModal = (product: Product) => {
-    setEditingProduct(product);
+  const openProductModal = (product: Product): void => {
+    setSelectedProduct(product);
     setUpdatedPrice(product.price.toString());
-    setUpdatedStock(product.stock.toString());
+    setQuantityToAdd("");
+    setActiveTab("price");
   };
 
-  const handleUpdateProduct = async () => {
-  if (!editingProduct) return;
-  
-  const price = parseFloat(updatedPrice);
-  const stock = parseInt(updatedStock);
-  if (isNaN(price) || isNaN(stock)) return;
+ const handleUpdateProduct = async (): Promise<void> => {
+  if (!selectedProduct) return;
 
   try {
     const token = localStorage.getItem('auth_token');
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json'
     };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
-    const response = await fetch(`http://localhost:8000/api/products/${editingProduct.id}`, {
+    let endpoint = `http://localhost:8000/api/products/${selectedProduct.id}`;
+    let body: any = {};
+
+    if (activeTab === "price") {
+      const price = parseFloat(updatedPrice);
+      if (isNaN(price)) {
+        alert("Please enter a valid price");
+        return;
+      }
+      body = { price, stock: selectedProduct.stock };
+    } else {
+      const quantity = parseInt(quantityToAdd);
+      if (isNaN(quantity)) {
+        alert("Please enter a valid quantity");
+        return;
+      }
+      body = { price: selectedProduct.price, stock: selectedProduct.stock + quantity };
+    }
+
+    const response = await fetch(endpoint, {
       method: 'PUT',
       headers,
-      body: JSON.stringify({ price, stock }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update product');
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Failed to ${activeTab === "price" ? "update price" : "add stock"}`);
     }
 
-    // Only update local state after successful API update
-    const updatedProducts = products.map((p) =>
-      p.id === editingProduct.id ? { ...p, price, stock } : p
-    );
-    setProducts(updatedProducts);
-    setEditingProduct(null);
-  } catch (error) {
+    const updatedProduct = await response.json();
+    setProducts(products.map(p => p.id === selectedProduct.id ? updatedProduct : p));
+    setSelectedProduct(null);
+  } catch (error: unknown) {
     console.error('Error updating product:', error);
-    // You might want to show an error message to the user here
+    if (error instanceof Error) {
+      alert(error.message || `Failed to ${activeTab === "price" ? "update price" : "add stock"}. Please try again.`);
+    } else {
+      alert(`Failed to ${activeTab === "price" ? "update price" : "add stock"}. Please try again.`);
+    }
   }
 };
 
@@ -274,18 +313,20 @@ const handleCheckout = async () => {
                         <div className="flex justify-between items-center">
                           <h3 className="text-lg font-bold">{product.name}</h3>
                           <button
-                            onClick={() => openEditModal(product)}
+                            onClick={() => openProductModal(product)}
                             className="text-blue-600 hover:text-blue-800 text-xl p-1 transition-colors duration-200"
-                            title="Edit"
+                            title="Edit Product"
                             aria-label="Edit product"
                           >
                             <HiPencilSquare />
                           </button>
                         </div>
                         <p style={{ color: "#FF8000" }} className="text-lg">
-  ₱{Number(product.price).toFixed(2)}
-</p>
-                        <p className="text-xs text-blue-500 mb-2">Stock: {product.stock}</p>
+                          {displayPrice(product.price)}
+                        </p>
+                        <p className={`text-xs mb-2 ${product.stock > 0 ? 'text-blue-500' : 'text-red-500'}`}>
+                          Stock: {product.stock}
+                        </p>
 
                         {product.sizes && product.sizes.length > 0 && (
                           <div className="mb-2">
@@ -367,10 +408,11 @@ const handleCheckout = async () => {
                           disabled={
                             (product.sizes && !selection.selectedSize) ||
                             (product.colors && !selection.selectedColor) ||
-                            (product.types && !selection.selectedType)
+                            (product.types && !selection.selectedType) ||
+                            product.stock <= 0
                           }
                         >
-                          Add to Cart
+                          {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                         </button>
                       </div>
                     );
@@ -387,7 +429,7 @@ const handleCheckout = async () => {
                     <p className="text-gray-500">No items in cart.</p>
                   ) : (
                     cart.map((item, idx) => (
-                      <div key={item.id + "-" + idx} className="flex justify-between items-center mb-3">
+                      <div key={`${item.id}-${idx}`} className="flex justify-between items-center mb-3">
                         <div>
                           <h4 className="font-semibold">{item.name}</h4>
                           {item.selectedSize && (
@@ -400,7 +442,7 @@ const handleCheckout = async () => {
                             <p className="text-sm text-gray-500">Type: {item.selectedType}</p>
                           )}
                           <p className="text-sm text-gray-500">
-                            ₱{item.price} × {item.quantity}
+                            {displayPrice(item.price)} × {item.quantity}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -429,91 +471,115 @@ const handleCheckout = async () => {
                   )}
                 </div>
                 <div className="mt-4 border-t pt-4">
-                  <p className="font-semibold text-lg">Total: ₱{total.toFixed(2)}</p>
-                 <button
-  className="w-full mt-2 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
-  disabled={cart.length === 0}
-  onClick={handleCheckout}
->
-  Checkout
-</button>
-
+                  <p className="font-semibold text-lg">Total: {displayPrice(total)}</p>
+                  <button
+                    className="w-full mt-2 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-200"
+                    disabled={cart.length === 0}
+                    onClick={handleCheckout}
+                  >
+                    Checkout
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Minimal Edit Modal */}
-          {editingProduct && (
+          {selectedProduct && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-md shadow p-5 w-72 relative">
-                <button
-                  onClick={() => setEditingProduct(null)}
-                  aria-label="Close modal"
-                  className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-                >
-                  ×
-                </button>
-                <h3 className="text-center font-medium mb-4">
-                  Edit {editingProduct.name}
-                </h3>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleUpdateProduct();
-                  }}
-                  className="space-y-3"
-                >
-                  <div>
-                    <label htmlFor="price" className="block text-sm mb-1">
-                      Price (₱)
-                    </label>
-                    <input
-                      id="price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={updatedPrice}
-                      onChange={(e) => setUpdatedPrice(e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                      required
-                    />
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-semibold">Manage Product</h3>
+                    <button
+                      onClick={() => setSelectedProduct(null)}
+                      className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <div>
-                    <label htmlFor="stock" className="block text-sm mb-1">
-                      Stock Quantity
-                    </label>
-                    <input
-                      id="stock"
-                      type="number"
-                      min="0"
-                      step="1"
-                      value={updatedStock}
-                      onChange={(e) => setUpdatedStock(e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                      required
-                    />
+
+                  <div className="flex border-b mb-4">
+                    <button
+                      className={`py-2 px-4 font-medium ${activeTab === "price" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500"}`}
+                      onClick={() => setActiveTab("price")}
+                    >
+                      Edit Price
+                    </button>
+                    <button
+                      className={`py-2 px-4 font-medium ${activeTab === "stock" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500"}`}
+                      onClick={() => setActiveTab("stock")}
+                    >
+                      Add Stock
+                    </button>
                   </div>
-                  <div className="flex justify-end gap-2 pt-3 border-t">
+                  
+                  <div className="mb-6">
+                    <p className="text-gray-700 mb-2">Product: <span className="font-medium">{selectedProduct.name}</span></p>
+                    {activeTab === "price" ? (
+                      <>
+                        <p className="text-gray-700 mb-2">Current Price: <span className="font-medium">
+                          {displayPrice(selectedProduct.price)}
+                        </span></p>
+                        <div className="mb-4">
+                          <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
+                            New Price (₱)
+                          </label>
+                          <input
+                            id="price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={updatedPrice}
+                            onChange={(e) => setUpdatedPrice(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-gray-700 mb-2">Current Stock: <span className="font-medium">{selectedProduct.stock}</span></p>
+                        <div className="mb-4">
+                          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+                            Quantity to Add
+                          </label>
+                          <input
+                            id="quantity"
+                            type="number"
+                            min="1"
+                            value={quantityToAdd}
+                            onChange={(e) => setQuantityToAdd(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter quantity"
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-end space-x-3">
                     <button
                       type="button"
-                      onClick={() => setEditingProduct(null)}
-                      className="px-3 py-1 text-gray-700 rounded hover:bg-gray-100"
+                      onClick={() => setSelectedProduct(null)}
+                      className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Cancel
                     </button>
                     <button
-                      type="submit"
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      type="button"
+                      onClick={handleUpdateProduct}
+                      className={`px-4 py-2 text-white rounded-md hover:bg-${activeTab === "price" ? "blue" : "green"}-700 focus:outline-none focus:ring-2 focus:ring-${activeTab === "price" ? "blue" : "green"}-500 bg-${activeTab === "price" ? "blue" : "green"}-600`}
                     >
-                      Save
+                      {activeTab === "price" ? "Update Price" : "Add Stock"}
                     </button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </>
