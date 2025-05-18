@@ -14,6 +14,7 @@ import Shop from './pages/ShopInformation/Shop.tsx';
 import AddProduct from './pages/ShopInformation/AddProduct.tsx';
 import Reports from './pages/reports.tsx';
 import ProductHistoryArchive from './pages/ShopInformation/ProductHistoryArchive.tsx';
+import HiddenProducts from './pages/ShopInformation/HiddenProducts.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/addproduct" element={<AddProduct />} />
+        <Route path="/hiddenproducts" element={<HiddenProducts />} />
         <Route path="/producthistory" element={<ProductHistoryArchive />} />
         <Route path="/reports" element={<Reports/>} />
       </Routes>

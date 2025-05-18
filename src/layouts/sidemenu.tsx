@@ -30,7 +30,7 @@ function Sidemenu() {
                                     <i className="w-6 h-4 side-menu_icon bi bi-speedometer"></i>
                                     <span className="side-menu__label">
                                         Dashboard &ensp;
-                                        <span className="translate-middle badge !rounded-full bg-danger">5+</span>
+                                        
                                     </span>
                                 </Link>
                             </li>

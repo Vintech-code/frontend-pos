@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import backgroundImage from '../assets/images/brand-logos/bg.jpg';
+import backgroundImage from '../assets/images/background/92791.jpg';
+import logo from '../assets/images/background/logo.png';
+
 
 function HomePage() {
   const navigate = useNavigate();
@@ -23,32 +25,25 @@ function HomePage() {
 
       {/* Transparent Header */}
       <header className="bg-white relative z-10 w-full p-6 flex justify-between items-center bg-transparent">
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-teal-400 mr-3"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-            />
-          </svg>
-          <span className="text-lg font-extrabold tracking-wide text-black">
-            Social Action Center Shop
-          </span>
-        </div>
-        <button
-          onClick={goToLogin}
-          className="bg-teal-500 hover:bg-teal-600 transition px-5 py-2 rounded-full font-semibold shadow-lg shadow-teal-700/50"
-        >
-          Admin Login
-        </button>
-      </header>
+  <div className="flex items-center space-x-3">
+    <img
+      src={logo}
+      alt="Logo"
+      className="h-10 w-auto"
+    />
+    <span className="text-lg font-extrabold tracking-wide text-black">
+      Social Action Center Shop
+    </span>
+  </div>
+  <button
+    onClick={goToLogin}
+    className="bg-teal-500 hover:bg-teal-600 transition px-5 py-2 rounded-full font-semibold shadow-lg shadow-teal-700/50"
+  >
+    Admin Login
+  </button>
+</header>
+
+
 
       {/* Main Content */}
       <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-6 text-center max-w-4xl mx-auto">
